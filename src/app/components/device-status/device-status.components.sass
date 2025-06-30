@@ -1,0 +1,170 @@
+// src/app/components/device-status/device-status.components.sass
+
+// Cores e Fontes (exemplo)
+$primary-color: #007bff
+$text-color: #333
+$border-color: #ddd
+$bg-light: #f8f9fa
+$card-bg: #fff
+$shadow: rgba(0, 0, 0, 0.1)
+
+// Estilo Global para o Componente
+.device-status-container
+  font-family: 'Arial', sans-serif
+  padding: 20px
+  max-width: 1200px
+  margin: 20px auto
+  background-color: $bg-light
+  border-radius: 8px
+  box-shadow: 0 4px 8px $shadow
+
+// Mensagens de carregamento/erro
+.loading-message, .error-message
+  text-align: center
+  font-size: 1.2em
+  padding: 20px
+  color: $primary-color
+  &.error-message
+    color: #dc3545 // Vermelho para erro
+
+// Seleção de Dispositivo
+.device-selection
+  margin-bottom: 30px
+  padding: 15px
+  background-color: $card-bg
+  border-radius: 8px
+  box-shadow: 0 2px 4px $shadow
+
+  label
+    font-weight: bold
+    margin-right: 10px
+    color: $text-color
+
+  select
+    padding: 8px 12px
+    border: 1px solid $border-color
+    border-radius: 4px
+    font-size: 1em
+    min-width: 200px
+
+// Detalhes do Dispositivo Selecionado
+.selected-device-details
+  display: grid
+  grid-template-columns: 1fr // Uma coluna por padrão
+  gap: 20px
+
+  @media (min-width: 768px) // Layout em duas colunas em telas maiores
+    grid-template-columns: 1fr 1fr
+
+  h2
+    grid-column: 1 / -1 // Ocupa todas as colunas
+    color: $primary-color
+    margin-bottom: 20px
+    text-align: center
+
+  .serial-number
+    font-size: 0.8em
+    color: #6c757d
+
+// Estilos para os Cartões (Informações, Status, Missões)
+.device-overview-card, .status-card, .missions-card
+  background-color: $card-bg
+  padding: 20px
+  border-radius: 8px
+  box-shadow: 0 2px 4px $shadow
+
+  h3
+    color: $primary-color
+    margin-top: 0
+    margin-bottom: 15px
+    border-bottom: 1px solid $border-color
+    padding-bottom: 10px
+
+  p
+    margin-bottom: 8px
+    line-height: 1.5
+
+    strong
+      color: #555
+
+.no-data-message
+  font-style: italic
+  color: #6c757d
+  text-align: center
+  padding: 10px
+
+// Lista de Missões
+.missions-list
+  list-style: none
+  padding: 0
+  margin: 0
+
+.mission-item
+  border: 1px solid $border-color
+  border-radius: 6px
+  padding: 15px
+  margin-bottom: 20px
+  background-color: lighten($card-bg, 3%) // Levemente mais claro
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08)
+
+  h4
+    color: #495057
+    margin-top: 0
+    margin-bottom: 10px
+    border-bottom: 1px dashed $border-color
+    padding-bottom: 5px
+
+// Seção de Dados Coletados dentro da Missão
+.collected-data-section
+  margin-top: 20px
+  padding: 15px
+  border: 1px dashed $border-color
+  border-radius: 6px
+  background-color: lighten($card-bg, 5%)
+
+  h5
+    color: #6c757d
+    margin-top: 0
+    margin-bottom: 15px
+    border-bottom: 1px dotted $border-color
+    padding-bottom: 5px
+
+.collected-data-list
+  list-style: none
+  padding: 0
+  margin: 0
+
+.collected-data-item
+  border-bottom: 1px solid #e9ecef // Linha sutil
+  padding-bottom: 15px
+  margin-bottom: 15px
+
+  &:last-child
+    border-bottom: none
+    margin-bottom: 0
+
+  h6
+    color: #007bff
+    margin-top: 0
+    margin-bottom: 10px
+
+// Estilos para os Detalhes Específicos (Sensor, Imagem, Vídeo, IA)
+.data-detail-card
+  background-color: #f1f3f5 // Um cinza mais claro
+  padding: 12px
+  border-radius: 4px
+  margin-top: 10px
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05)
+
+  h6
+    color: #495057
+    margin-top: 0
+    margin-bottom: 8px
+
+.collected-media
+  max-width: 100% // Garante que imagens/vídeos não estourem
+  height: auto
+  display: block
+  margin-top: 10px
+  border: 1px solid $border-color
+  border-radius: 4px
