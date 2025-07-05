@@ -1,31 +1,25 @@
-// src/app/components/device-status/device-status.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { DeviceData } from '../../interfaces/device-data.interface';
 import { AegisSynapseApi } from '../../services/aegis-synapse-api';
-
-// --- IMPORTAR AS INTERFACES DE RELACIONAMENTO AQUI ---
-import { OperationalStatus } from '../../interfaces/operational-status.interface'; // Ajuste o caminho se necessário
-import { Mission } from '../../interfaces/mission.interface';             // Ajuste o caminho se necessário
-// --- FIM DOS IMPORTS ---
+import { DeviceConnectivityStatus } from '../../common/enums/device/device-connectivity-status.enum';
+import { DeviceData } from '../../interfaces/device-data.interface';
 
 @Component({
   selector: 'app-device-status',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule
-  ],
+  imports: [CommonModule, FormsModule],
   templateUrl: './device-status.components.html',
-  styleUrl: './device-status.components.sass'
+  styleUrls: ['./device-status.components.sass']
 })
 export class DeviceStatusComponent implements OnInit {
+  DeviceConnectivityStatus = DeviceConnectivityStatus; // expoe enum para o template
+
   allDevices: DeviceData[] = [];
   selectedDeviceId: number | null = null;
   selectedDevice: DeviceData | null = null;
   errorMessage: string | null = null;
-  isLoading: boolean = true;
+  isLoading = true;
 
   constructor(private aegisSynapseApiService: AegisSynapseApi) { }
 
@@ -46,7 +40,7 @@ export class DeviceStatusComponent implements OnInit {
         }
       },
       error: (err) => {
-        console.error('Erro ao carregar todos os dispositivos:', err);
+        console.error('Erro ao carregar dispositivos:', err);
         this.errorMessage = 'Não foi possível carregar a lista de dispositivos. Verifique a API ou a conexão.';
         this.isLoading = false;
       }
@@ -55,12 +49,14 @@ export class DeviceStatusComponent implements OnInit {
 
   onDeviceSelect(): void {
     if (this.selectedDeviceId !== null) {
-      this.selectedDevice = this.allDevices.find(
-        device => device.id === this.selectedDeviceId
-      ) || null;
+      this.selectedDevice = this.allDevices.find(device => device.id === this.selectedDeviceId) || null;
     } else {
       this.selectedDevice = null;
     }
   }
 
+  selectDevice(id: number): void {
+    this.selectedDeviceId = id;
+    this.onDeviceSelect();
+  }
 }

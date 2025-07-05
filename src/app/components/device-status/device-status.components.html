@@ -1,21 +1,25 @@
 <div class="device-status-container">
-    <div *ngIf="isLoading" class="loading-message">Carregando dispositivos...</div>
-    <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
 
-    <div *ngIf="!isLoading && !errorMessage">
-        <div class="device-selection">
-            <label for="device-select">Selecione um Dispositivo:</label>
-            <select id="device-select" [(ngModel)]="selectedDeviceId" (change)="onDeviceSelect()">
-                <option [ngValue]="null" disabled>-- Escolha um dispositivo --</option>
-                <option *ngFor="let device of allDevices" [ngValue]="device.id">
-                    {{ device.deviceName }} ({{ device.serialNumber }})
-                </option>
-            </select>
-        </div>
+    <div class="device-selection">
 
-        <div *ngIf="selectedDevice" class="selected-device-details">
-            <h2>{{ selectedDevice.deviceName }} <span class="serial-number">({{ selectedDevice.serialNumber }})</span></h2>
+        <ul class="device-list">
+            <li *ngFor="let device of allDevices" (click)="selectedDeviceId = device.id; onDeviceSelect()"
+                [class.selected]="selectedDeviceId === device.id"
+                [class.inactive]="device.ConnectionStatus !== 'Online'">
+                <strong>{{ device.deviceName }}</strong>
+                <br />
+                <span *ngIf="device.ConnectionStatus === 'Online'" class="status-active">{{ device.ConnectionStatus
+                    }}</span>
+                <span *ngIf="device.ConnectionStatus !== 'Online'" class="status-inactive">{{ device.ConnectionStatus
+                    }}</span>
+            </li>
+        </ul>
+    </div>
 
+    <div class="device-info-container" *ngIf="selectedDevice">
+        <div class="device-details-left">
+            <h2>{{ selectedDevice.deviceName }} <span class="serial-number">({{ selectedDevice.serialNumber }})</span>
+            </h2>
             <div class="device-overview-card">
                 <h3>Informações do Dispositivo</h3>
                 <p><strong>Modelo:</strong> {{ selectedDevice.model }}</p>
@@ -25,79 +29,36 @@
                 <p><strong>Modo de Operação:</strong> {{ selectedDevice.operationMode }}</p>
                 <p><strong>Modo de Energia:</strong> {{ selectedDevice.powerMode }}</p>
             </div>
-
-            <div class="status-card">
-                <h3>Status Operacional do Dispositivo</h3>
-                <p>
-                    <strong>Nome:</strong> {{ selectedDevice.operationalStatus.statusName || 'N/A' }}
-                </p>
-                <p *ngIf="selectedDevice.operationalStatus.description">
-                    <strong>Descrição:</strong> {{ selectedDevice.operationalStatus.description }}
-                </p>
-                <p>
-                    <strong>Tipo:</strong> {{ selectedDevice.operationalStatus.statusType || 'N/A' }}
-                </p>
+            <div class="device-map-mock">
+                <div class="map-placeholder">
+                    <p>Mapa Fictício</p>
+                </div>
             </div>
 
+        </div>
+
+        <div class="device-details-right">
             <div class="missions-card">
                 <h3>Missões Associadas</h3>
-                <p *ngIf="!selectedDevice.missions || selectedDevice.missions.length === 0" class="no-data-message">Nenhuma missão associada.</p>
+                <p *ngIf="!selectedDevice.missions || selectedDevice.missions.length === 0" class="no-data-message">
+                    Nenhuma missão associada.</p>
                 <ul *ngIf="selectedDevice.missions && selectedDevice.missions.length > 0" class="missions-list">
                     <li *ngFor="let mission of selectedDevice.missions" class="mission-item">
                         <h4>{{ mission.missionName }}</h4>
                         <p *ngIf="mission.objective"><strong>Objetivo:</strong> {{ mission.objective }}</p>
                         <p>
                             <strong>Status da Missão:</strong> {{ mission.missionStatus?.statusName || 'N/A' }}
-                            <span *ngIf="mission.missionStatus?.description"> ({{ mission.missionStatus.description }})</span>
+                            <span *ngIf="mission.missionStatus?.description"> ({{ mission.missionStatus.description
+                                }})</span>
                         </p>
                         <p><strong>Início:</strong> {{ mission.startDatetime | date:'short' }}</p>
                         <p><strong>Fim:</strong> {{ mission.endDatetime | date:'short' }}</p>
-                        <p *ngIf="mission.researchedArea"><strong>Área Pesquisada:</strong> {{ mission.researchedArea }}</p>
-
-                        <div *ngIf="mission.collectedData && mission.collectedData.length > 0" class="collected-data-section">
-                            <h5>Dados Coletados</h5>
-                            <ul class="collected-data-list">
-                                <li *ngFor="let data of mission.collectedData" class="collected-data-item">
-                                    <h6>Tipo de Dado: {{ data.dataType }}</h6>
-                                    <p><strong>Data/Hora Coleta:</strong> {{ data.collectionDatetime | date:'short' }}</p>
-                                    <p><strong>Localização:</strong> {{ data.latitude | number:'1.4-4' }}, {{ data.longitude | number:'1.4-4' }}</p>
-                                    <p *ngIf="data.altitude"><strong>Altitude:</strong> {{ data.altitude }} m</p>
-                                    <p *ngIf="data.aegisBatteryLevel"><strong>Nível Bateria AEGIS:</strong> {{ data.aegisBatteryLevel }}%</p>
-
-                                    <div *ngIf="data.sensorData" class="data-detail-card">
-                                        <h6>Dados do Sensor</h6>
-                                        <p><strong>Nome Sensor:</strong> {{ data.sensorData.sensorName }}</p>
-                                        <p *ngIf="data.sensorData.numericValue"><strong>Valor Numérico:</strong> {{ data.sensorData.numericValue }} {{ data.sensorData.unitOfMeasure }}</p>
-                                        <p *ngIf="data.sensorData.textValue"><strong>Valor Texto:</strong> {{ data.sensorData.textValue }}</p>
-                                        <p><strong>Status Sensor:</strong> {{ data.sensorData.sensorStatus?.statusName || 'N/A' }}</p>
-                                    </div>
-
-                                    <div *ngIf="data.image" class="data-detail-card">
-                                        <h6>Imagem</h6>
-                                        <p><strong>Nome Arquivo:</strong> {{ data.image.fileName }}</p>
-                                        <p><strong>Resolução:</strong> {{ data.image.resolution }}</p>
-                                        <img [src]="data.image.filePath" alt="Imagem Coletada" class="collected-media">
-                                    </div>
-
-                                    <div *ngIf="data.video" class="data-detail-card">
-                                        <h6>Vídeo</h6>
-                                        <p><strong>Nome Arquivo:</strong> {{ data.video.fileName }}</p>
-                                        <p><strong>Duração:</strong> {{ data.video.durationSeconds }} s</p>
-                                        </div>
-
-                                    <div *ngIf="data.aiAnalysis" class="data-detail-card">
-                                        <h6>Análise de IA</h6>
-                                        <p><strong>Tipo de Análise:</strong> {{ data.aiAnalysis.analysisType }}</p>
-                                        <p><strong>Resultado:</strong> {{ data.aiAnalysis.resultText }}</p>
-                                        <p *ngIf="data.aiAnalysis.confidenceScore"><strong>Confiança:</strong> {{ data.aiAnalysis.confidenceScore | percent }}</p>
-                                        <p *ngIf="data.aiAnalysis.iaModelUsed"><strong>Modelo Usado:</strong> {{ data.aiAnalysis.iaModelUsed }}</p>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
+                        <p *ngIf="mission.researchedArea"><strong>Área Pesquisada:</strong> {{ mission.researchedArea }}
+                        </p>
                     </li>
                 </ul>
             </div>
         </div>
     </div>
+
 </div>
